@@ -104,7 +104,12 @@ class _EditReelScreenState extends State<EditReelScreen> {
 
     try {
       final resCode = await http.get(Uri.parse(
-          '$serverUrl/api/monthcodes?user_id=$userId&auth_key=$authKey'));
+          '$serverUrl/api/monthcodes'),
+          headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  });
       if (resCode.statusCode == 200) {
         final List<dynamic> data = json.decode(resCode.body);
         setState(() {
@@ -113,7 +118,12 @@ class _EditReelScreenState extends State<EditReelScreen> {
       }
 
       final resParty = await http.get(Uri.parse(
-          '$serverUrl/api/parties?user_id=$userId&auth_key=$authKey'));
+          '$serverUrl/api/parties'),
+          headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  });
       if (resParty.statusCode == 200) {
         final List<dynamic> data = json.decode(resParty.body);
         setState(() {
@@ -160,15 +170,17 @@ class _EditReelScreenState extends State<EditReelScreen> {
     }
 
     final payload = {
-      'user_id': int.tryParse(userId) ?? 0,
-      'auth_key': authKey,
       'reel': reelData,
     };
 
     try {
       final response = await http.post(
         Uri.parse('$serverUrl$endpoint'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  },
         body: json.encode(payload),
       );
 
@@ -213,10 +225,14 @@ class _EditReelScreenState extends State<EditReelScreen> {
       // Build QR Code endpoint URL
       final qrText = '$serverUrl/lookupqr?id=${Uri.encodeComponent(reelId)}';
       final qrUrl =
-          '$serverUrl/api/qrcode?user_id=$userId&auth_key=${Uri.encodeComponent(authKey)}&text=${Uri.encodeComponent(qrText)}&size=512';
+          '$serverUrl/api/qrcode?text=${Uri.encodeComponent(qrText)}&size=512';
 
       // Fetch QR Code image bytes
-      final response = await http.get(Uri.parse(qrUrl));
+      final response = await http.get(Uri.parse(qrUrl),
+      headers: {
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  });
       if (response.statusCode != 200)
         throw Exception("Failed to fetch QR Code");
       final Uint8List qrBytes = response.bodyBytes;

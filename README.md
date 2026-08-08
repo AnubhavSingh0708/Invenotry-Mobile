@@ -11,10 +11,21 @@ refreshes every time any change is made for high concurrency, by subscribing to 
 Views in this app are interactive ,zoomable, refreshing colours
 ## Speed
 Dart is known to be snappy and performant
-## QR code
-Manage your work in a flash with QR code scanning for reel management throughout the app
 
-# Known Issues
-### Auth credential IN URI queries
-will be fixed in the next release
-
+## Screenshorts
+ ### Dashboard
+![dash](./screenshorts/dash.png)
+### Inventory table
+![invent](./screenshorts/map.png)
+### rearrangement GUI
+![rearrange](./screenshorts/rearrange.png)
+### label printing
+![print](./screenshorts/print.png)
+### dispatched
+![dispatch](./screenshorts/dispatch.png)
+### Billed archive
+![archive](./screenshorts/archive.png)
+### Scan QR code to view details
+![qr](./screenshorts/scan.png)
+### Advanced search
+![search](./screenshorts/search.png)

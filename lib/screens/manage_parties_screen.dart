@@ -27,7 +27,12 @@ class _ManagePartiesScreenState extends State<ManagePartiesScreen> {
 
     try {
       final res = await http.get(
-        Uri.parse('${session['serverUrl']}/api/parties?user_id=${session['userId']}&auth_key=${session['authKey']}'),
+        Uri.parse('${session['serverUrl']}/api/parties'),
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': '${session['userId']}',
+            'X-Auth-Key': '${session['authKey']}',
+  },
       );
       if (res.statusCode == 200) {
         setState(() {
@@ -50,10 +55,12 @@ class _ManagePartiesScreenState extends State<ManagePartiesScreen> {
     final session = await StorageService.getSession();
     final res = await http.post(
       Uri.parse('${session['serverUrl']}/api/party/add'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': '${session['userId']}',
+            'X-Auth-Key': '${session['authKey']}',
+  },
       body: jsonEncode({
-        'user_id': int.parse(session['userId']!),
-        'auth_key': session['authKey'],
         'party': {'name': name},
       }),
     );
@@ -68,10 +75,12 @@ class _ManagePartiesScreenState extends State<ManagePartiesScreen> {
     final session = await StorageService.getSession();
     final res = await http.post(
       Uri.parse('${session['serverUrl']}/api/party/remove'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': '${session['userId']}',
+            'X-Auth-Key': '${session['authKey']}',
+  },
       body: jsonEncode({
-        'user_id': int.parse(session['userId']!),
-        'auth_key': session['authKey'],
         'id': id,
       }),
     );

@@ -86,12 +86,22 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
 
   Future<void> _fetchMapAndTables() async {
     try {
-      final mapUri = Uri.parse('$serverUrl/api/map?user_id=$userId&auth_key=$authKey');
-      final tablesUri = Uri.parse('$serverUrl/api/tables?user_id=$userId&auth_key=$authKey');
+      final mapUri = Uri.parse('$serverUrl/api/map');
+      final tablesUri = Uri.parse('$serverUrl/api/tables');
 
       final results = await Future.wait([
-        http.get(mapUri),
-        http.get(tablesUri),
+        http.get(mapUri,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  }),
+        http.get(tablesUri,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  }),
       ]);
 
       if (results[0].statusCode == 200 && results[1].statusCode == 200) {
@@ -213,10 +223,15 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
 
     for (var table in _tablesList) {
       final tId = table['id'].toString();
-      final cellUri = Uri.parse('$serverUrl/api/table?user_id=$userId&auth_key=$authKey&table_id=$tId');
+      final cellUri = Uri.parse('$serverUrl/api/table?table_id=$tId');
 
       try {
-        final res = await http.get(cellUri);
+        final res = await http.get(cellUri,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  });
         if (res.statusCode == 200) {
           final cellsData = jsonDecode(res.body);
           final cells = cellsData is List ? cellsData : (cellsData['results'] ?? []);

@@ -43,7 +43,12 @@ class _AdvancedReelSearchScreenState extends State<AdvancedReelSearchScreen> {
     final session = await StorageService.getSession();
     try {
       final res = await http.get(
-        Uri.parse('${session['serverUrl']}/api/search/meta?user_id=${session['userId']}&auth_key=${session['authKey']}'),
+        Uri.parse('${session['serverUrl']}/api/search/meta'),
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': '${session['userId']}',
+            'X-Auth-Key': '${session['authKey']}',
+  }
       );
       if (res.statusCode == 200) {
         setState(() {
@@ -117,8 +122,6 @@ class _AdvancedReelSearchScreenState extends State<AdvancedReelSearchScreen> {
     final session = await StorageService.getSession();
 
     final payload = {
-      'user_id': int.parse(session['userId']!),
-      'auth_key': session['authKey'],
       'target': _selectedTarget,
       'match': _matchType,
       'filters': _activeFilters,
@@ -134,7 +137,11 @@ class _AdvancedReelSearchScreenState extends State<AdvancedReelSearchScreen> {
     try {
       final res = await http.post(
         Uri.parse('${session['serverUrl']}/api/search'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': '${session['userId']}',
+            'X-Auth-Key': '${session['authKey']}',
+  },
         body: jsonEncode(payload),
       );
 

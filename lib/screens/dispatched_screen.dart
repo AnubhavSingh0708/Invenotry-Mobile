@@ -48,11 +48,13 @@ class _DispatchedScreenState extends State<DispatchedScreen> {
     try {
       final session = await StorageService.getSession();
       final serverUrl = session['serverUrl'];
-      final userId = session['userId'];
-      final authKey = session['authKey'];
-
       final res = await http.get(
-        Uri.parse('$serverUrl/api/billing?user_id=$userId&auth_key=$authKey'),
+        Uri.parse('$serverUrl/api/billing'),
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': '${session['userId']}',
+            'X-Auth-Key': '${session['authKey']}',
+  }
       );
 
       if (!mounted) return;
@@ -139,10 +141,12 @@ class _DispatchedScreenState extends State<DispatchedScreen> {
 
     final res = await http.post(
       Uri.parse('${session['serverUrl']}/api/billing/archive'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': '${session['userId']}',
+            'X-Auth-Key': '${session['authKey']}',
+  },
       body: jsonEncode({
-        'user_id': int.parse(session['userId']!),
-        'auth_key': session['authKey'],
         'reel_id': reelId,
         'billed_date': dateStr,
         'billed_time': timeStr,
@@ -158,10 +162,12 @@ class _DispatchedScreenState extends State<DispatchedScreen> {
     final session = await StorageService.getSession();
     final res = await http.post(
       Uri.parse('${session['serverUrl']}/api/dispatch/undo'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': '${session['userId']}',
+            'X-Auth-Key': '${session['authKey']}',
+  },
       body: jsonEncode({
-        'user_id': int.parse(session['userId']!),
-        'auth_key': session['authKey'],
         'reel_id': reelId,
       }),
     );

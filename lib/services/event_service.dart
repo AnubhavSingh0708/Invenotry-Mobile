@@ -21,11 +21,13 @@ class EventService {
   void connect({required String serverUrl, required int userId, required String authKey}) async {
     disconnect(); // Close existing connection if any
 
-    final uri = Uri.parse('$serverUrl/api/events?user_id=$userId&auth_key=$authKey');
+    final uri = Uri.parse('$serverUrl/api/events');
     _client = http.Client();
 
     try {
       final request = http.Request('GET', uri)
+        ..headers['X-User-ID']= userId.toString()
+        ..headers['X-Auth-Key']= authKey
         ..headers['Accept'] = 'text/event-stream'
         ..headers['Cache-Control'] = 'no-cache';
 

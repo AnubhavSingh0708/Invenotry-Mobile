@@ -84,10 +84,12 @@ class _ReelDetailsViewState extends State<ReelDetailsView> {
     try {
       final response = await http.post(
         Uri.parse('$_serverUrl/api/search'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': _userId.toString(),
+            'X-Auth-Key': _authKey,
+  },
         body: jsonEncode({
-          "user_id": _userId,
-          "auth_key": _authKey,
           "target": "reels",
           "match": "all",
           "filters": [
@@ -113,8 +115,13 @@ class _ReelDetailsViewState extends State<ReelDetailsView> {
 
   Future<void> _findTableAndCell(int targetNumber, String searchMonth) async {
     try {
-      final tablesUri = Uri.parse('$_serverUrl/api/tables?user_id=$_userId&auth_key=$_authKey');
-      final tablesRes = await http.get(tablesUri);
+      final tablesUri = Uri.parse('$_serverUrl/api/tables');
+      final tablesRes = await http.get(tablesUri,
+      headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': _userId.toString(),
+            'X-Auth-Key': _authKey,
+  });
 
       if (tablesRes.statusCode != 200) return;
 
@@ -125,8 +132,13 @@ class _ReelDetailsViewState extends State<ReelDetailsView> {
 
       for (var table in tables) {
         final tableId = table['id'];
-        final cellsUri = Uri.parse('$_serverUrl/api/table?user_id=$_userId&auth_key=$_authKey&table_id=$tableId');
-        final cellsRes = await http.get(cellsUri);
+        final cellsUri = Uri.parse('$_serverUrl/api/table?table_id=$tableId');
+        final cellsRes = await http.get(cellsUri,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': _userId.toString(),
+            'X-Auth-Key': _authKey,
+  });
 
         if (cellsRes.statusCode == 200) {
           final cellsData = jsonDecode(cellsRes.body);
@@ -254,10 +266,12 @@ class _ReelDetailsViewState extends State<ReelDetailsView> {
     try {
       final res = await http.post(
         Uri.parse('$_serverUrl/api/dispatch/add'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': _userId.toString(),
+            'X-Auth-Key': _authKey,
+  },
         body: jsonEncode({
-          "user_id": _userId,
-          "auth_key": _authKey,
           "reel_id": _reel!.reelId,
           "dispatch_date": dispatchDate,
           "dispatch_time": dispatchTime,

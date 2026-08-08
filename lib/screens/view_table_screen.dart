@@ -105,8 +105,13 @@ class _ViewTableScreenState extends State<ViewTableScreen> with SingleTickerProv
     }
 
     try {
-      final cellSizeUri = Uri.parse('$serverUrl/api/cellsize?user_id=$userId&auth_key=$authKey&table_id=${widget.tableId}');
-      final cellRes = await http.get(cellSizeUri);
+      final cellSizeUri = Uri.parse('$serverUrl/api/cellsize?table_id=${widget.tableId}');
+      final cellRes = await http.get(cellSizeUri,
+      headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  });
 
       if (cellRes.statusCode == 200) {
         final sz = jsonDecode(cellRes.body);
@@ -115,8 +120,12 @@ class _ViewTableScreenState extends State<ViewTableScreen> with SingleTickerProv
         _isVertical = (sz['stack_type'] ?? '') == 'vertical';
       }
 
-      final tableUri = Uri.parse('$serverUrl/api/table?user_id=$userId&auth_key=$authKey&table_id=${widget.tableId}');
-      final tableRes = await http.get(tableUri);
+      final tableUri = Uri.parse('$serverUrl/api/table?table_id=${widget.tableId}');
+      final tableRes = await http.get(tableUri,headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  });
 
       if (!mounted) return;
 
@@ -163,10 +172,12 @@ class _ViewTableScreenState extends State<ViewTableScreen> with SingleTickerProv
     try {
       final res = await http.post(
         Uri.parse('$serverUrl/api/search'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  },
         body: jsonEncode({
-          'user_id': int.tryParse(userId) ?? 0,
-          'auth_key': authKey,
           'target': 'reels',
           'match': 'all',
           'filters': [
@@ -247,7 +258,11 @@ class _ViewTableScreenState extends State<ViewTableScreen> with SingleTickerProv
 
     try {
       final res = await http.get(
-        Uri.parse('$serverUrl/api/reels/unassigned?user_id=$userId&auth_key=$authKey'),
+        Uri.parse('$serverUrl/api/reels/unassigned'),headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  }
       );
 
       if (res.statusCode == 200) {
@@ -386,10 +401,12 @@ class _ViewTableScreenState extends State<ViewTableScreen> with SingleTickerProv
     try {
       final res = await http.post(
         Uri.parse('$serverUrl/api/add'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  },
         body: jsonEncode({
-          'user_id': int.tryParse(userId) ?? 0,
-          'auth_key': authKey,
           'table_id': widget.tableId,
           'item': item,
           'month_code': monthCode,
@@ -580,8 +597,12 @@ class _ViewTableScreenState extends State<ViewTableScreen> with SingleTickerProv
 
     try {
       // 1. Check if reel is in unassigned reels list
-      final unassignedUri = Uri.parse('$serverUrl/api/reels/unassigned?user_id=$userId&auth_key=$authKey');
-      final unassignedRes = await http.get(unassignedUri);
+      final unassignedUri = Uri.parse('$serverUrl/api/reels/unassigned');
+      final unassignedRes = await http.get(unassignedUri,headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key':authKey,
+  });
       bool isUnassigned = false;
 
       if (unassignedRes.statusCode == 200) {
@@ -636,8 +657,13 @@ class _ViewTableScreenState extends State<ViewTableScreen> with SingleTickerProv
 
       // 3. Search for table & cell presence across all other tables
       Map<String, dynamic>? otherTableLoc;
-      final tablesUri = Uri.parse('$serverUrl/api/tables?user_id=$userId&auth_key=$authKey');
-      final tablesRes = await http.get(tablesUri);
+      final tablesUri = Uri.parse('$serverUrl/api/tables');
+      final tablesRes = await http.get(tablesUri,
+      headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  });
 
       if (tablesRes.statusCode == 200) {
         final tablesData = jsonDecode(tablesRes.body);
@@ -647,8 +673,12 @@ class _ViewTableScreenState extends State<ViewTableScreen> with SingleTickerProv
           final tableId = table['id']?.toString();
           if (tableId == widget.tableId.toString()) continue;
 
-          final cellsUri = Uri.parse('$serverUrl/api/table?user_id=$userId&auth_key=$authKey&table_id=$tableId');
-          final cellsRes = await http.get(cellsUri);
+          final cellsUri = Uri.parse('$serverUrl/api/table?table_id=$tableId');
+          final cellsRes = await http.get(cellsUri,headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  });
 
           if (cellsRes.statusCode == 200) {
             final cellsData = jsonDecode(cellsRes.body);
@@ -692,10 +722,12 @@ class _ViewTableScreenState extends State<ViewTableScreen> with SingleTickerProv
         // Remove from original location
         await http.post(
           Uri.parse('$serverUrl/api/remove'),
-          headers: {'Content-Type': 'application/json'},
+         headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  },
           body: jsonEncode({
-            'user_id': int.tryParse(userId) ?? 0,
-            'auth_key': authKey,
             'table_id': otherTableLoc['tableId'],
             'row': otherTableLoc['row'],
             'col': otherTableLoc['col'],
@@ -736,10 +768,12 @@ class _ViewTableScreenState extends State<ViewTableScreen> with SingleTickerProv
     try {
       final res = await http.post(
         Uri.parse('$serverUrl/api/move'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  },
         body: jsonEncode({
-          'user_id': int.tryParse(userId) ?? 0,
-          'auth_key': authKey,
           'item': itemNum,
           'from_table_id': widget.tableId,
           'from_row': fromRow,
@@ -764,10 +798,12 @@ class _ViewTableScreenState extends State<ViewTableScreen> with SingleTickerProv
     try {
       final res = await http.post(
         Uri.parse('$serverUrl/api/remove'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  },
         body: jsonEncode({
-          'user_id': int.tryParse(userId) ?? 0,
-          'auth_key': authKey,
           'table_id': widget.tableId,
           'row': r,
           'col': c,
@@ -791,10 +827,12 @@ class _ViewTableScreenState extends State<ViewTableScreen> with SingleTickerProv
     try {
       final res = await http.post(
         Uri.parse('$serverUrl/api/dispatch/add'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  },
         body: jsonEncode({
-          'user_id': int.tryParse(userId) ?? 0,
-          'auth_key': authKey,
           'reel_id': reelId,
           'dispatch_date': dateStr,
           'dispatch_time': timeStr

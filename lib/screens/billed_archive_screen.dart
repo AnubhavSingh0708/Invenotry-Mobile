@@ -46,14 +46,16 @@ class _BilledArchiveScreenState extends State<BilledArchiveScreen> {
     try {
       final session = await StorageService.getSession();
       final serverUrl = session['serverUrl'];
-      final userId = session['userId'];
-      final authKey = session['authKey'];
 
       final uri = Uri.parse(
-        '$serverUrl/api/billed_archive?user_id=$userId&auth_key=$authKey&limit=$_limit&offset=$_offset',
+        '$serverUrl/api/billed_archive?limit=$_limit&offset=$_offset',
       );
 
-      final res = await http.get(uri);
+      final res = await http.get(uri,headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': '${session['userId']}',
+            'X-Auth-Key': '${session['authKey']}',
+  });
 
       if (res.statusCode == 200) {
         final List list = jsonDecode(res.body);

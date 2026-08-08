@@ -27,7 +27,12 @@ class _ManageMonthcodesScreenState extends State<ManageMonthcodesScreen> {
 
     try {
       final res = await http.get(
-        Uri.parse('${session['serverUrl']}/api/monthcodes?user_id=${session['userId']}&auth_key=${session['authKey']}'),
+        Uri.parse('${session['serverUrl']}/api/monthcodes'),
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': '${session['userId']}',
+            'X-Auth-Key': '${session['authKey']}',
+  }
       );
       if (res.statusCode == 200) {
         setState(() {
@@ -52,8 +57,6 @@ class _ManageMonthcodesScreenState extends State<ManageMonthcodesScreen> {
       Uri.parse('${session['serverUrl']}/api/monthcode/add'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        'user_id': int.parse(session['userId']!),
-        'auth_key': session['authKey'],
         'code': code,
       }),
     );
@@ -68,10 +71,12 @@ class _ManageMonthcodesScreenState extends State<ManageMonthcodesScreen> {
     final session = await StorageService.getSession();
     final res = await http.post(
       Uri.parse('${session['serverUrl']}/api/monthcode/remove'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': '${session['userId']}',
+            'X-Auth-Key': '${session['authKey']}',
+  },
       body: jsonEncode({
-        'user_id': int.parse(session['userId']!),
-        'auth_key': session['authKey'],
         'id': id,
       }),
     );

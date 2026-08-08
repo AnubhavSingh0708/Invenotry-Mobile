@@ -84,10 +84,15 @@ class _ReelManagerScreenState extends State<ReelManagerScreen> {
 
 
     final end = currentStart + limit - 1;
-    final url = '$serverUrl/api/reels?user_id=$userId&auth_key=$authKey&start=$currentStart&end=$end';
+    final url = '$serverUrl/api/reels?start=$currentStart&end=$end';
 
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url),
+      headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  });
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         setState(() {
@@ -125,10 +130,12 @@ class _ReelManagerScreenState extends State<ReelManagerScreen> {
     try {
       await http.post(
         Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  },
         body: json.encode({
-          'user_id': int.parse(userId),
-          'auth_key': authKey,
           'id': reel.id
         }),
       );
@@ -143,10 +150,14 @@ class _ReelManagerScreenState extends State<ReelManagerScreen> {
     try {
       // Build QR Code endpoint URL
       final qrText = '$serverUrl/lookupqr?id=${Uri.encodeComponent(reel.reelId)}';
-      final qrUrl = '$serverUrl/api/qrcode?user_id=$userId&auth_key=${Uri.encodeComponent(authKey)}&text=${Uri.encodeComponent(qrText)}&size=512';
+      final qrUrl = '$serverUrl/api/qrcode?text=${Uri.encodeComponent(qrText)}&size=512';
 
       // Fetch QR Code image bytes
-      final response = await http.get(Uri.parse(qrUrl));
+      final response = await http.get(Uri.parse(qrUrl),
+      headers: {
+            'X-User-ID': userId,
+            'X-Auth-Key': authKey,
+  });
       if (response.statusCode != 200) throw Exception("Failed to fetch QR Code");
       final Uint8List qrBytes = response.bodyBytes;
 
